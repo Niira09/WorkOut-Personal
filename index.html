@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workout Personal ⭐⚡</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js para gráfica de evolución -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts: Outfit & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        skybrand: {
+                            50: '#f1f9fc',
+                            100: '#dff2f8',
+                            200: '#bfe5f1',
+                            400: '#8ad0e4',
+                            500: '#6BC3DB',
+                            600: '#49a8c3',
+                            700: '#3988a0',
+                        },
+                        ocean: {
+                            50: '#eef7fb',
+                            100: '#d6ecf5',
+                            400: '#5ab4cf',
+                            500: '#3b9ab8',
+                            600: '#2d7d97',
+                        },
+                        ink: '#18181b'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #fafafa;
+            color: #18181b;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .saiyan-card {
+            background: #ffffff;
+            border: 1px solid #f0f0f2;
+            box-shadow: 0 4px 20px -2px rgba(24, 24, 27, 0.04);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .ocean-gradient {
+            background: linear-gradient(135deg, #3b9ab8 0%, #6BC3DB 100%);
+        }
+        .sky-gradient {
+            background: linear-gradient(135deg, #6BC3DB 0%, #98d8ea 100%);
+        }
+        .tab-active {
+            background-color: #18181b;
+            color: #ffffff;
+        }
+        @keyframes pop {
+            0% { transform: scale(0.95); }
+            50% { transform: scale(1.04); }
+            100% { transform: scale(1); }
+        }
+        .animate-pop {
+            animation: pop 0.25s ease-out;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-24 md:pb-12">
+
+    <!-- Notificación Toast Flotante -->
+    <div id="toast-container" class="fixed top-4 right-4 left-4 md:left-auto md:w-96 z-50 pointer-events-none flex flex-col gap-2"></div>
+
+    <!-- ==========================================
+         PANTALLA INICIAL: REGISTRO / INICIO DE SESIÓN
+    =========================================== -->
+    <div id="auth-screen" class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-skybrand-50 via-white to-skybrand-100">
+        <div class="saiyan-card rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-xl border border-gray-100">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 rounded-3xl sky-gradient flex items-center justify-center text-white font-display font-black text-3xl shadow-md mx-auto mb-3">
+                    ⭐
+                </div>
+                <h1 class="font-display font-black text-2xl tracking-tight text-ink uppercase">WORKOUT PERSONAL</h1>
+                <p class="text-xs text-gray-500 mt-1">Tu espacio personal de fuerza, hábitos y progreso ⚡</p>
+            </div>
+
+            <!-- Selector Registro / Entrar -->
+            <div class="grid grid-cols-2 gap-2 p-1 bg-gray-100 rounded-2xl mb-6">
+                <button type="button" id="auth-tab-login" onclick="switchAuthMode('login')" class="py-2 rounded-xl font-display font-bold text-xs bg-white text-ink shadow-sm transition">
+                    Iniciar Sesión
+                </button>
+                <button type="button" id="auth-tab-register" onclick="switchAuthMode('register')" class="py-2 rounded-xl font-display font-bold text-xs text-gray-500 hover:text-ink transition">
+                    Crear Cuenta
+                </button>
+            </div>
+
+            <!-- Formulario Login -->
+            <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">Nombre de usuario</label>
+                    <input type="text" id="login-username" required placeholder="Ej: estrella_fit" class="w-full px-4 py-3 rounded-2xl border border-gray-200 text-sm focus:outline-none focus:border-skybrand-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">Contraseña</label>
+                    <input type="password" id="login-password" required placeholder="••••••••" class="w-full px-4 py-3 rounded-2xl border border-gray-200 text-sm focus:outline-none focus:border-skybrand-500">
+                </div>
+                <button type="submit" class="w-full py-3.5 rounded-2xl ocean-gradient text-white font-display font-bold text-sm shadow-md hover:opacity-95 transition">
+                    Entrar a mi cuenta ⚡
+                </button>
+            </form>
+
+            <!-- Formulario Registro -->
+            <form id="register-form" onsubmit="handleRegister(event)" class="space-y-4 hidden">
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">¿Cómo te llamas?</label>
+                    <input type="text" id="reg-name" required placeholder="Tu nombre (ej: Lucía)" class="w-full px-4 py-3 rounded-2xl border border-gray-200 text-sm focus:outline-none focus:border-skybrand-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">Elige un usuario</label>
+                    <input type="text" id="reg-username" required placeholder="Sin espacios (ej: lucia26)" class="w-full px-4 py-3 rounded-2xl border border-gray-200 text-sm focus:outline-none focus:border-skybrand-500">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1">Peso inicial (kg)</label>
+                        <input type="number" step="0.1" id="reg-weight" value="79.0" required class="w-full px-4 py-3 rounded-2xl border border-gray-200 text-sm focus:outline-none focus:border-skybrand-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1">Contraseña</label>
+                        <input type="password" id="reg-password" required placeholder="••••••••" class="w-full px-4 py-3 rounded-2xl border border-gray-200 text-sm focus:outline-none focus:border-skybrand-500">
+                    </div>
+                </div>
+                <button type="submit" class="w-full py-3.5 rounded-2xl sky-gradient text-white font-display font-bold text-sm shadow-md hover:opacity-95 transition">
+                    Crear mi cuenta y empezar ⭐
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         CONTENEDOR DE LA APP (OCULTO HASTA INICIAR SESIÓN)
+    =========================================== -->
+    <div id="app-container" class="hidden">
+
+        <!-- Modal de Confirmación Personalizado -->
+        <div id="confirm-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+            <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-gray-100">
+                <h3 id="modal-title" class="font-display font-bold text-xl text-ink mb-2">¿Estás segura?</h3>
+                <p id="modal-desc" class="text-sm text-gray-600 mb-6">Esta acción borrará tus datos guardados en esta cuenta.</p>
+                <div class="flex gap-3">
+                    <button onclick="closeConfirmModal()" class="flex-1 py-3 px-4 rounded-2xl bg-gray-100 text-gray-700 font-semibold text-sm hover:bg-gray-200 transition">Cancelar</button>
+                    <button id="modal-confirm-btn" class="flex-1 py-3 px-4 rounded-2xl bg-skybrand-500 text-white font-semibold text-sm hover:bg-skybrand-600 transition">Sí, continuar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de Importar Respaldo -->
+        <div id="import-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+            <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-gray-100">
+                <h3 class="font-display font-bold text-xl text-ink mb-2">📥 Importar Respaldo</h3>
+                <p class="text-xs text-gray-600 mb-4">Pega aquí el código de respaldo que copiaste en tu otro dispositivo para recuperar todo tu progreso:</p>
+                <textarea id="import-data-textarea" rows="4" placeholder='{"xp":40,"streak":1...}' class="w-full p-3 rounded-2xl border border-gray-200 text-xs font-mono focus:outline-none focus:border-skybrand-500 mb-4"></textarea>
+                <div class="flex gap-3">
+                    <button onclick="closeImportModal()" class="flex-1 py-3 px-4 rounded-2xl bg-gray-100 text-gray-700 font-semibold text-sm hover:bg-gray-200 transition">Cancelar</button>
+                    <button onclick="importDataFromText()" class="flex-1 py-3 px-4 rounded-2xl sky-gradient text-white font-semibold text-sm hover:opacity-95 transition">Restaurar Datos</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Header Superior Estilo Workout Personal -->
+        <header class="bg-white border-b border-gray-100 sticky top-0 z-30">
+            <div class="max-w-4xl mx-auto px-4 py-3.5 flex flex-wrap items-center justify-between gap-3">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-10 h-10 rounded-2xl sky-gradient flex items-center justify-center text-white font-display font-black text-xl shadow-sm">
+                        ⭐
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-1.5">
+                            <h1 class="font-display font-extrabold text-lg tracking-tight text-ink leading-none uppercase">WORKOUT PERSONAL</h1>
+                            <span id="header-username-tag" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-skybrand-100 text-skybrand-700">@usuario</span>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-0.5">Fuerza, energía y equilibrio hormonal ⚡</p>
+                    </div>
+                </div>
+
+                <!-- Badge de Nivel, XP y Cerrar Sesión -->
+                <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-3 bg-gray-50 px-3.5 py-2 rounded-2xl border border-gray-100">
+                        <div class="text-right">
+                            <div class="flex items-center justify-end gap-1">
+                                <span class="text-xs font-bold text-skybrand-600" id="user-level-badge">Nivel 1</span>
+                                <span class="text-xs text-gray-400">•</span>
+                                <span class="text-xs font-semibold text-ink" id="user-streak">🔥 0 días</span>
+                            </div>
+                            <div class="w-20 sm:w-28 h-2 bg-gray-200 rounded-full overflow-hidden mt-1">
+                                <div id="xp-bar" class="h-full ocean-gradient transition-all duration-500" style="width: 15%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="logoutUser()" title="Cerrar sesión" class="p-2.5 rounded-2xl bg-gray-100 hover:bg-red-50 text-gray-600 hover:text-red-600 text-xs font-bold transition">
+                        Salir
+                    </button>
+                </div>
+            </div>
+
+            <!-- Navegación Principal -->
+            <nav class="max-w-4xl mx-auto px-4 pb-3 flex gap-2 overflow-x-auto no-scrollbar">
+                <button onclick="switchTab('hoy')" id="tab-hoy" class="tab-active flex-1 min-w-[120px] py-2.5 px-4 rounded-2xl font-display font-bold text-sm transition flex items-center justify-center gap-2">
+                    <span>⚡</span> Modo Hoy
+                </button>
+                <button onclick="switchTab('progreso')" id="tab-progreso" class="bg-gray-100 text-gray-600 hover:bg-gray-200 flex-1 min-w-[120px] py-2.5 px-4 rounded-2xl font-display font-bold text-sm transition flex items-center justify-center gap-2">
+                    <span>📈</span> Mi Progreso
+                </button>
+                <button onclick="switchTab('rutinas')" id="tab-rutinas" class="bg-gray-100 text-gray-600 hover:bg-gray-200 flex-1 min-w-[120px] py-2.5 px-4 rounded-2xl font-display font-bold text-sm transition flex items-center justify-center gap-2">
+                    <span>🏃‍♀️</span> Entrenos & CaCo
+                </button>
+            </nav>
+        </header>
+
+        <!-- Contenedor Principal -->
+        <main class="max-w-4xl mx-auto px-4 pt-6 space-y-6">
+
+            <!-- ==========================================
+                 PESTAÑA 1: MODO HOY
+            =========================================== -->
+            <section id="view-hoy" class="space-y-6">
+                
+                <!-- Tarjeta Mensaje Coach Lily -->
+                <div class="saiyan-card rounded-3xl p-5 bg-gradient-to-r from-skybrand-50 via-white to-skybrand-100/60 border-skybrand-100 relative overflow-hidden">
+                    <div class="flex items-start gap-3.5">
+                        <div class="w-11 h-11 rounded-2xl bg-white shadow-sm flex items-center justify-center text-2xl shrink-0 border border-skybrand-100">
+                            💬
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="text-xs font-bold uppercase tracking-wider text-skybrand-600">Mensaje de tu Coach Lily</span>
+                                <span id="today-date-label" class="text-xs text-gray-400 font-medium"></span>
+                            </div>
+                            <p id="coach-message" class="text-sm sm:text-base text-ink font-medium mt-1 leading-relaxed">
+                                ¡Buenos días! Hoy no buscamos perfección, buscamos constancia con cariño. Tu cuerpo ya sabe cómo hacerlo, vamos paso a paso.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grid Superior: Pasos + Temporizador CaCo/Fuerza -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    
+                    <!-- Módulo Contador de Pasos -->
+                    <div class="saiyan-card rounded-3xl p-5 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-skybrand-700 bg-skybrand-50 px-3 py-1 rounded-full">
+                                    👟 Movimiento Diario
+                                </span>
+                                <span class="text-xs font-semibold text-gray-400">Meta: 9.000 pasos</span>
+                            </div>
+                            <div class="flex items-baseline gap-2 my-2">
+                                <span id="steps-display" class="font-display font-black text-4xl text-ink">0</span>
+                                <span class="text-sm text-gray-500 font-medium">/ 9.000 pasos</span>
+                            </div>
+                            <div class="w-full h-3 bg-gray-100 rounded-full overflow-hidden my-3">
+                                <div id="steps-bar" class="h-full sky-gradient transition-all duration-300 rounded-full" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2.5 pt-2">
+                            <div class="grid grid-cols-3 gap-2">
+                                <button onclick="addSteps(1000)" class="py-2.5 px-2 rounded-2xl bg-skybrand-50 hover:bg-skybrand-100 text-skybrand-700 font-bold text-xs transition">+1.000</button>
+                                <button onclick="addSteps(2500)" class="py-2.5 px-2 rounded-2xl bg-skybrand-50 hover:bg-skybrand-100 text-skybrand-700 font-bold text-xs transition">+2.500</button>
+                                <button onclick="setGoalSteps()" class="py-2.5 px-2 rounded-2xl sky-gradient text-white font-bold text-xs shadow-sm hover:opacity-95 transition">¡Meta Lista!</button>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <input type="number" id="custom-steps-input" placeholder="Ej: 6500" class="w-full text-sm px-3.5 py-2 rounded-xl border border-gray-200 focus:outline-none focus:border-skybrand-500">
+                                <button onclick="setCustomSteps()" class="px-4 py-2 rounded-xl bg-ink text-white text-xs font-bold hover:bg-gray-800 transition shrink-0">Guardar</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Módulo Temporizador Entreno "Sin Pereza" -->
+                    <div class="saiyan-card rounded-3xl p-5 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-ocean-600 bg-ocean-50 px-3 py-1 rounded-full">
+                                    ⏱️ Timer CaCo & Fuerza
+                                </span>
+                                <select id="timer-preset" onchange="selectTimerPreset()" class="text-xs font-semibold bg-gray-100 text-ink rounded-xl px-2.5 py-1.5 focus:outline-none">
+                                    <option value="1200">CaCo Suave (20 min)</option>
+                                    <option value="900">Fuerza Express (15 min)</option>
+                                    <option value="120">Intervalo Correr (2 min)</option>
+                                    <option value="180">Intervalo Caminar (3 min)</option>
+                                    <option value="45">Trabajo Fuerza (45 seg)</option>
+                                </select>
+                            </div>
+
+                            <div class="text-center my-3 py-2 bg-gray-50 rounded-2xl border border-gray-100">
+                                <div id="timer-display" class="font-display font-black text-4xl tracking-wider text-ink">20:00</div>
+                                <p id="timer-status" class="text-xs text-gray-500 mt-1">Listo para empezar sin agobios</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-2 pt-2">
+                            <button id="timer-start-btn" onclick="toggleTimer()" class="col-span-2 py-3 px-4 rounded-2xl ocean-gradient text-white font-display font-bold text-sm shadow-sm hover:opacity-95 transition flex items-center justify-center gap-1.5">
+                                <span>▶</span> Iniciar
+                            </button>
+                            <button onclick="resetTimer()" class="py-3 px-4 rounded-2xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-sm transition">
+                                Reiniciar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Checklist de Misiones Diarias -->
+                <div class="saiyan-card rounded-3xl p-5 sm:p-6">
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+                        <div>
+                            <h2 class="font-display font-extrabold text-xl text-ink">Misiones Estelares de Hoy</h2>
+                            <p class="text-xs text-gray-500">Diseñadas para cuidar tus hormonas, evitar mareos y sumar energía</p>
+                        </div>
+                        <span id="missions-counter" class="text-xs font-bold px-3 py-1.5 rounded-full bg-ink text-white">0 / 5 completadas</span>
+                    </div>
+
+                    <!-- Selector de Entreno del Día -->
+                    <div class="mb-4 p-3.5 rounded-2xl bg-skybrand-50 border border-skybrand-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                            <span class="text-xs font-bold text-skybrand-700 uppercase">Tu movimiento principal hoy:</span>
+                            <p class="text-xs text-gray-600">Elige según tu nivel de energía (¡ambos suman igual!)</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="setWorkoutChoice('caco')" id="btn-choice-caco" class="px-3 py-2 rounded-xl text-xs font-bold bg-skybrand-500 text-white shadow-sm transition">🏃‍♀️ Caminata / CaCo</button>
+                            <button onclick="setWorkoutChoice('fuerza')" id="btn-choice-fuerza" class="px-3 py-2 rounded-xl text-xs font-bold bg-white text-gray-700 border border-gray-200 transition">💪 Fuerza 15'</button>
+                        </div>
+                    </div>
+
+                    <!-- Lista de Tareas -->
+                    <div id="daily-checklist" class="space-y-2.5"></div>
+
+                    <!-- Añadir Misión Personalizada -->
+                    <div class="mt-4 pt-4 border-t border-gray-100 flex gap-2">
+                        <input type="text" id="new-habit-input" placeholder="Añadir objetivo propio (ej: Tomar infusión relajante)..." class="flex-1 text-sm px-4 py-2.5 rounded-2xl bg-gray-50 border border-gray-200 focus:outline-none focus:border-skybrand-500">
+                        <button onclick="addCustomHabit()" class="px-4 py-2.5 rounded-2xl bg-ink text-white text-xs font-bold hover:bg-gray-800 transition shrink-0">+ Añadir</button>
+                    </div>
+
+                    <!-- Botón Día Compasivo -->
+                    <div class="mt-4 bg-gray-50 rounded-2xl p-3.5 flex flex-col sm:flex-row items-center justify-between gap-3">
+                        <p class="text-xs text-gray-600 text-center sm:text-left">
+                            ¿Día pesado, mareos o desajuste hormonal? Activa el <strong>Modo Escucha Corporal</strong> sin perder tu racha.
+                        </p>
+                        <button onclick="activateCompassionMode()" class="px-4 py-2 rounded-xl bg-white border border-gray-200 hover:border-skybrand-500 text-xs font-bold text-ink transition shrink-0">
+                            ⭐ Hoy toca cuidarme
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 PESTAÑA 2: PROGRESO Y SALUD HORMONAL
+            =========================================== -->
+            <section id="view-progreso" class="hidden space-y-6">
+                
+                <!-- Hoja de Ruta por Mini-Metas -->
+                <div class="saiyan-card rounded-3xl p-5 sm:p-6">
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+                        <div>
+                            <h2 class="font-display font-extrabold text-xl text-ink">Mapa de Mini-Metas</h2>
+                            <p class="text-xs text-gray-500">Celebramos cada escalón hacia tu objetivo.</p>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xs text-gray-400 block">Peso Actual</span>
+                            <span id="current-weight-hero" class="font-display font-black text-2xl text-skybrand-600">79.0 kg</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-5">
+                        <div class="flex justify-between text-xs font-bold text-gray-500 mb-1.5">
+                            <span id="start-weight-label">Inicio: 79 kg</span>
+                            <span id="progress-percent-label" class="text-skybrand-600">0% del camino</span>
+                            <span>Meta: 56 kg</span>
+                        </div>
+                        <div class="w-full h-4 bg-gray-100 rounded-full overflow-hidden p-0.5">
+                            <div id="overall-weight-bar" class="h-full sky-gradient rounded-full transition-all duration-500" style="width: 2%"></div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-5 gap-2.5" id="milestones-grid"></div>
+                </div>
+
+                <!-- Formulario de Registro + Gráfica -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    
+                    <div class="lg:col-span-5 saiyan-card rounded-3xl p-5 sm:p-6 space-y-4">
+                        <h3 class="font-display font-extrabold text-lg text-ink">Nuevo Registro de Bienestar</h3>
+                        
+                        <div class="bg-skybrand-50 border border-skybrand-100 rounded-2xl p-3 text-xs text-skybrand-700 leading-relaxed">
+                            💡 <strong>Recuerda:</strong> Con regla irregular o fase premenstrual, tu cuerpo retiene líquidos (1-2 kg extra es agua, no grasa). Mira la tendencia, no un día aislado.
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 mb-1">Peso actual (kg)</label>
+                            <input type="number" step="0.1" id="input-weight" placeholder="Ej: 78.5" class="w-full px-4 py-2.5 rounded-2xl border border-gray-200 text-sm font-semibold focus:outline-none focus:border-skybrand-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 mb-1">Estado hormonal / Ciclo hoy</label>
+                            <select id="input-cycle" class="w-full px-4 py-2.5 rounded-2xl border border-gray-200 text-sm bg-white focus:outline-none focus:border-skybrand-500">
+                                <option value="Energía estable / Folicular">✨ Energía estable / Días buenos</option>
+                                <option value="Premenstrual / Hinchazón">🎈 Hinchazón / Retención de líquidos</option>
+                                <option value="Con la regla / Dolor suave">🩸 Con la regla</option>
+                                <option value="Retraso / Irregularidad hormonal">🌙 Retraso o desajuste hormonal</option>
+                                <option value="Cansancio / Mareo leve">🔋 Cansancio (priorizar hierro y descanso)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 mb-1">Nivel de Energía (1 al 5)</label>
+                            <div class="grid grid-cols-5 gap-1.5" id="energy-selector">
+                                <button type="button" onclick="selectEnergy(1)" class="energy-btn py-2 rounded-xl border border-gray-200 text-xs font-bold hover:bg-gray-50" data-val="1">1 😴</button>
+                                <button type="button" onclick="selectEnergy(2)" class="energy-btn py-2 rounded-xl border border-gray-200 text-xs font-bold hover:bg-gray-50" data-val="2">2 🥱</button>
+                                <button type="button" onclick="selectEnergy(3)" class="energy-btn py-2 rounded-xl border-2 border-skybrand-500 bg-skybrand-50 text-xs font-bold" data-val="3">3 🙂</button>
+                                <button type="button" onclick="selectEnergy(4)" class="energy-btn py-2 rounded-xl border border-gray-200 text-xs font-bold hover:bg-gray-50" data-val="4">4 💪</button>
+                                <button type="button" onclick="selectEnergy(5)" class="energy-btn py-2 rounded-xl border border-gray-200 text-xs font-bold hover:bg-gray-50" data-val="5">5 ⚡</button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 mb-1">Notas (opcional)</label>
+                            <input type="text" id="input-notes" placeholder="Ej: Dormí bien, comí lentejas con naranja..." class="w-full px-4 py-2.5 rounded-2xl border border-gray-200 text-sm focus:outline-none focus:border-skybrand-500">
+                        </div>
+
+                        <button onclick="saveWeightLog()" class="w-full py-3.5 rounded-2xl ocean-gradient text-white font-display font-bold text-sm shadow-md hover:opacity-95 transition">
+                            Guardar Registro (+50 XP)
+                        </button>
+                    </div>
+
+                    <div class="lg:col-span-7 space-y-6">
+                        <div class="saiyan-card rounded-3xl p-5 sm:p-6">
+                            <h3 class="font-display font-extrabold text-lg text-ink mb-4">Evolución de Peso</h3>
+                            <div class="relative h-60 w-full">
+                                <canvas id="weightChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="saiyan-card rounded-3xl p-5 sm:p-6">
+                            <h3 class="font-display font-extrabold text-lg text-ink mb-3">Historial Reciente</h3>
+                            <div id="logs-history" class="space-y-2.5 max-h-64 overflow-y-auto pr-1"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Herramientas de Copia de Seguridad -->
+                <div class="saiyan-card rounded-3xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div>
+                        <h4 class="font-display font-bold text-sm text-ink">Tus datos están guardados en tu cuenta personal</h4>
+                        <p class="text-xs text-gray-500">Si vas a abrir tu cuenta desde otro móvil u ordenador, copia el respaldo e impórtalo allí.</p>
+                    </div>
+                    <div class="flex flex-wrap gap-2 shrink-0">
+                        <button onclick="exportDataToClipboard()" class="px-4 py-2.5 rounded-2xl bg-gray-100 hover:bg-gray-200 text-ink text-xs font-bold transition">📋 Copiar Respaldo</button>
+                        <button onclick="openImportModal()" class="px-4 py-2.5 rounded-2xl bg-skybrand-50 hover:bg-skybrand-100 text-skybrand-700 text-xs font-bold transition">📥 Importar Respaldo</button>
+                        <button onclick="confirmResetApp()" class="px-4 py-2.5 rounded-2xl bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold transition">Reiniciar Cuenta</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 PESTAÑA 3: ENTRENOS & PLAN CACO
+            =========================================== -->
+            <section id="view-rutinas" class="hidden space-y-6">
+                
+                <div class="saiyan-card rounded-3xl p-5 sm:p-6">
+                    <div class="flex items-start justify-between gap-3 mb-4">
+                        <div>
+                            <span class="text-xs font-bold uppercase tracking-wider text-skybrand-700 bg-skybrand-50 px-3 py-1 rounded-full">Plan 4 Semanas</span>
+                            <h2 class="font-display font-extrabold text-xl text-ink mt-2">Método CaCo: De Caminar a Correr sin Ahogarte</h2>
+                            <p class="text-xs text-gray-600 mt-1">Hazlo 3 días por semana. El ritmo de trote debe permitirte hablar sin quedarte sin aire.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div class="p-4 rounded-2xl bg-gray-50 border border-gray-100">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="font-display font-bold text-sm text-ink">Semana 1: Despertar Piernas</span>
+                                <span class="text-xs font-bold text-skybrand-600">20 min</span>
+                            </div>
+                            <p class="text-xs text-gray-600 leading-relaxed">• 5 min caminata rápida para calentar.<br>• <strong>4 bloques de:</strong> 3 min caminando + 1 min trote muy suave.<br>• 4 min caminata suave final.</p>
+                        </div>
+
+                        <div class="p-4 rounded-2xl bg-gray-50 border border-gray-100">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="font-display font-bold text-sm text-ink">Semana 2: Cogiendo Ritmo</span>
+                                <span class="text-xs font-bold text-skybrand-600">24 min</span>
+                            </div>
+                            <p class="text-xs text-gray-600 leading-relaxed">• 4 min caminata rápida.<br>• <strong>4 bloques de:</strong> 2 min caminando + 2 min trote suave.<br>• 4 min caminata suave final.</p>
+                        </div>
+
+                        <div class="p-4 rounded-2xl bg-gray-50 border border-gray-100">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="font-display font-bold text-sm text-ink">Semana 3: Resistencia Estelar</span>
+                                <span class="text-xs font-bold text-ocean-600">25 min</span>
+                            </div>
+                            <p class="text-xs text-gray-600 leading-relaxed">• 4 min caminata rápida.<br>• <strong>3 bloques de:</strong> 2 min caminando + 4 min trote cómodo.<br>• 3 min caminata suave final.</p>
+                        </div>
+
+                        <div class="p-4 rounded-2xl bg-gray-50 border border-gray-100">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="font-display font-bold text-sm text-ink">Semana 4: ¡Ya Eres Runner!</span>
+                                <span class="text-xs font-bold text-ocean-600">26 min</span>
+                            </div>
+                            <p class="text-xs text-gray-600 leading-relaxed">• 4 min caminata rápida.<br>• <strong>3 bloques de:</strong> 1.5 min caminando + 5 min trote continuo.<br>• 3 min caminata suave final.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div class="saiyan-card rounded-3xl p-5 sm:p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-bold uppercase text-skybrand-700 bg-skybrand-50 px-3 py-1 rounded-full">Rutina A • 15 Min</span>
+                            <span class="text-xs text-gray-400 font-semibold">3 vueltas</span>
+                        </div>
+                        <h3 class="font-display font-extrabold text-lg text-ink mb-1">Estructura & Glúteo (Bajo Impacto)</h3>
+                        <p class="text-xs text-gray-500 mb-4">Protege tus rodillas al correr y mejora tu postura. 40 seg trabajo / 20 seg descanso.</p>
+                        
+                        <ul class="space-y-2.5 text-xs text-gray-700">
+                            <li class="p-2.5 rounded-xl bg-gray-50 flex justify-between items-center">
+                                <span><strong>1. Sentadilla a silla</strong> (controlada)</span>
+                                <span class="font-bold text-ink">40s</span>
+                            </li>
+                            <li class="p-2.5 rounded-xl bg-gray-50 flex justify-between items-center">
+                                <span><strong>2. Puente de glúteo</strong> en esterilla</span>
+                                <span class="font-bold text-ink">40s</span>
+                            </li>
+                            <li class="p-2.5 rounded-xl bg-gray-50 flex justify-between items-center">
+                                <span><strong>3. Remo con mochila</strong> (con libros/botellas)</span>
+                                <span class="font-bold text-ink">40s</span>
+                            </li>
+                            <li class="p-2.5 rounded-xl bg-gray-50 flex justify-between items-center">
+                                <span><strong>4. Plancha inclinada</strong> (manos en sofá/mesa)</span>
+                                <span class="font-bold text-ink">30s</span>
+                            </li>
+                        </ul>
+                        <button onclick="startQuickRoutineTimer(900, 'Rutina A: Estructura (15 min)')" class="w-full mt-4 py-3 rounded-2xl bg-ink text-white font-display font-bold text-xs hover:bg-gray-800 transition">
+                            ⏱️ Cargar 15 min en el Temporizador
+                        </button>
+                    </div>
+
+                    <div class="saiyan-card rounded-3xl p-5 sm:p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-bold uppercase text-ocean-600 bg-ocean-50 px-3 py-1 rounded-full">Rutina B • 15 Min</span>
+                            <span class="text-xs text-gray-400 font-semibold">3 vueltas</span>
+                        </div>
+                        <h3 class="font-display font-extrabold text-lg text-ink mb-1">Core, Espalda & Estabilidad</h3>
+                        <p class="text-xs text-gray-500 mb-4">Ideal para días con menos ganas. Sin saltos, directo al grano.</p>
+                        
+                        <ul class="space-y-2.5 text-xs text-gray-700">
+                            <li class="p-2.5 rounded-xl bg-gray-50 flex justify-between items-center">
+                                <span><strong>1. Zancada atrás alterna</strong> (paso corto)</span>
+                                <span class="font-bold text-ink">40s</span>
+                            </li>
+                            <li class="p-2.5 rounded-xl bg-gray-50 flex justify-between items-center">
+                                <span><strong>2. Flexiones inclinadas</strong> (pared o mesa)</span>
+                                <span class="font-bold text-ink">40s</span>
+                            </li>
+                            <li class="p-2.5 rounded-xl bg-gray-50 flex justify-between items-center">
+                                <span><strong>3. Bird-Dog</strong> (equilibrio espalda/core)</span>
+                                <span class="font-bold text-ink">40s</span>
+                            </li>
+                            <li class="p-2.5 rounded-xl bg-gray-50 flex justify-between items-center">
+                                <span><strong>4. Dead Bug</strong> (abdomen profundo)</span>
+                                <span class="font-bold text-ink">40s</span>
+                            </li>
+                        </ul>
+                        <button onclick="startQuickRoutineTimer(900, 'Rutina B: Core & Espalda (15 min)')" class="w-full mt-4 py-3 rounded-2xl bg-ink text-white font-display font-bold text-xs hover:bg-gray-800 transition">
+                            ⏱️ Cargar 15 min en el Temporizador
+                        </button>
+                    </div>
+                </div>
+
+                <div class="saiyan-card rounded-3xl p-5 sm:p-6 bg-gradient-to-br from-white to-skybrand-50/70">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="text-2xl">🥗</span>
+                        <div>
+                            <h3 class="font-display font-extrabold text-lg text-ink">Plato Saludable Anti-Anemia & Hormonas Felices</h3>
+                            <p class="text-xs text-gray-500">Equilibrio nutricional y absorción de hierro</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mt-4">
+                        <div class="bg-white p-3.5 rounded-2xl border border-gray-100">
+                            <span class="text-xs font-bold text-skybrand-600 block mb-1">🍗 1. Proteína + Hierro</span>
+                            <p class="text-xs text-gray-600">Pollo, pavo, huevos, pescado, lentejas o ternera magra. Sacia y mantiene tu masa muscular.</p>
+                        </div>
+                        <div class="bg-white p-3.5 rounded-2xl border border-gray-100">
+                            <span class="text-xs font-bold text-ocean-600 block mb-1">🍚 2. Energía Estable</span>
+                            <p class="text-xs text-gray-600">Arroz, patata cocida, avena o pan integral. Tus hormonas necesitan carbohidratos reales.</p>
+                        </div>
+                        <div class="bg-white p-3.5 rounded-2xl border border-gray-100">
+                            <span class="text-xs font-bold text-skybrand-700 block mb-1">🥑 3. Grasas Hormonales</span>
+                            <p class="text-xs text-gray-600">Aguacate, aceite de oliva virgen extra, nueces o semillas. Clave para producir hormonas.</p>
+                        </div>
+                        <div class="bg-white p-3.5 rounded-2xl border border-gray-100">
+                            <span class="text-xs font-bold text-cyan-700 block mb-1">🍊 4. Truco Absorción Hierro</span>
+                            <p class="text-xs text-gray-600">Acompaña tus comidas con vitamina C (limón, pimiento, kiwi o naranja de postre).</p>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // ==========================================
+        // GESTIÓN DE CUENTAS Y SESIÓN
+        // ==========================================
+        const USERS_DB_KEY = 'workout_personal_users_db_v1';
+        const ACTIVE_USER_KEY = 'workout_personal_active_user_v1';
+
+        let currentUser = null;
+        let appState = null;
+        let selectedEnergy = 3;
+        let weightChartInstance = null;
+
+        let timerSeconds = 1200;
+        let timerInterval = null;
+        let isTimerRunning = false;
+
+        const todayISO = () => new Date().toISOString().split('T')[0];
+
+        function getUsersDB() {
+            try {
+                return JSON.parse(localStorage.getItem(USERS_DB_KEY)) || {};
+            } catch (e) {
+                return {};
+            }
+        }
+
+        function saveUsersDB(db) {
+            localStorage.setItem(USERS_DB_KEY, JSON.stringify(db));
+        }
+
+        function getUserStorageKey(username) {
+            return `workout_personal_data_${username.toLowerCase()}`;
+        }
+
+        function createDefaultState(startWeight = 79.0) {
+            return {
+                xp: 40,
+                streak: 1,
+                lastActiveDate: todayISO(),
+                workoutChoice: 'caco',
+                startWeight: startWeight,
+                dailyData: {
+                    date: todayISO(),
+                    steps: 0,
+                    compassionMode: false,
+                    habits: [
+                        { id: 'h1', text: 'Completar mi sesión de hoy (Caminata/CaCo o Fuerza 15\')', done: false, xp: 40 },
+                        { id: 'h2', text: 'Alcanzar mi meta de movimiento (8.000 - 9.000 pasos)', done: false, xp: 30 },
+                        { id: 'h3', text: 'Comidas completas: Proteína + Hierro + Grasas buenas (sin saltar comidas)', done: false, xp: 30 },
+                        { id: 'h4', text: 'Hidratación constante (2L de agua durante el día)', done: false, xp: 20 },
+                        { id: 'h5', text: 'Descanso reparador (7-8h) y cero culpa con la báscula', done: false, xp: 20 }
+                    ]
+                },
+                weightLogs: [
+                    { date: todayISO(), weight: startWeight, cycle: 'Energía estable / Folicular', energy: 3, notes: '¡Punto de partida! Vamos a por ello sin prisas.' }
+                ]
+            };
+        }
+
+        function switchAuthMode(mode) {
+            const loginForm = document.getElementById('login-form');
+            const regForm = document.getElementById('register-form');
+            const tabLogin = document.getElementById('auth-tab-login');
+            const tabReg = document.getElementById('auth-tab-register');
+
+            if (mode === 'login') {
+                loginForm.classList.remove('hidden');
+                regForm.classList.add('hidden');
+                tabLogin.className = "py-2 rounded-xl font-display font-bold text-xs bg-white text-ink shadow-sm transition";
+                tabReg.className = "py-2 rounded-xl font-display font-bold text-xs text-gray-500 hover:text-ink transition";
+            } else {
+                loginForm.classList.add('hidden');
+                regForm.classList.remove('hidden');
+                tabReg.className = "py-2 rounded-xl font-display font-bold text-xs bg-white text-ink shadow-sm transition";
+                tabLogin.className = "py-2 rounded-xl font-display font-bold text-xs text-gray-500 hover:text-ink transition";
+            }
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            const name = document.getElementById('reg-name').value.trim();
+            const username = document.getElementById('reg-username').value.trim().toLowerCase().replace(/\s+/g, '');
+            const password = document.getElementById('reg-password').value;
+            const startWeight = parseFloat(document.getElementById('reg-weight').value) || 79.0;
+
+            if (!name || !username || !password) {
+                showToast("Rellena todos los campos para crear tu cuenta", "error");
+                return;
+            }
+
+            const db = getUsersDB();
+            if (db[username]) {
+                showToast("Ese nombre de usuario ya existe. Prueba con otro.", "error");
+                return;
+            }
+
+            db[username] = { name, username, password };
+            saveUsersDB(db);
+
+            const initialState = createDefaultState(startWeight);
+            localStorage.setItem(getUserStorageKey(username), JSON.stringify(initialState));
+
+            localStorage.setItem(ACTIVE_USER_KEY, username);
+            initSession(username);
+            showToast(`¡Bienvenida, ${name}! Tu cuenta ha sido creada ⭐`, 'sky');
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('login-username').value.trim().toLowerCase();
+            const password = document.getElementById('login-password').value;
+
+            const db = getUsersDB();
+            const userRecord = db[username];
+
+            if (!userRecord || userRecord.password !== password) {
+                showToast("Usuario o contraseña incorrectos", "error");
+                return;
+            }
+
+            localStorage.setItem(ACTIVE_USER_KEY, username);
+            initSession(username);
+            showToast(`¡Hola de nuevo, ${userRecord.name}! ⚡`, 'sky');
+        }
+
+        function logoutUser() {
+            pauseTimer();
+            localStorage.removeItem(ACTIVE_USER_KEY);
+            currentUser = null;
+            appState = null;
+            document.getElementById('app-container').classList.add('hidden');
+            document.getElementById('auth-screen').classList.remove('hidden');
+            document.getElementById('login-password').value = '';
+            showToast("Sesión cerrada correctamente");
+        }
+
+        function initSession(username) {
+            const db = getUsersDB();
+            if (!db[username]) {
+                logoutUser();
+                return;
+            }
+
+            currentUser = db[username];
+            appState = loadUserState(username);
+
+            document.getElementById('auth-screen').classList.add('hidden');
+            document.getElementById('app-container').classList.remove('hidden');
+
+            document.getElementById('header-username-tag').textContent = `@${currentUser.username}`;
+            document.getElementById('coach-message').textContent = 
+                `¡Hola, ${currentUser.name}! Soy Lily. Hoy no buscamos perfección, buscamos constancia con cariño. Tu cuerpo ya sabe cómo hacerlo, vamos paso a paso.`;
+
+            renderAll();
+        }
+
+        // ==========================================
+        // CARGA Y GUARDADO DE DATOS POR USUARIO
+        // ==========================================
+        function loadUserState(username) {
+            try {
+                const raw = localStorage.getItem(getUserStorageKey(username));
+                if (!raw) return createDefaultState();
+                const parsed = JSON.parse(raw);
+
+                if (parsed.dailyData.date !== todayISO()) {
+                    const yesterday = new Date();
+                    yesterday.setDate(yesterday.getDate() - 1);
+                    const yesterdayISO = yesterday.toISOString().split('T')[0];
+
+                    const completedYesterday = parsed.dailyData.habits.filter(h => h.done).length >= 2 || parsed.dailyData.compassionMode;
+                    if (parsed.dailyData.date === yesterdayISO && completedYesterday) {
+                        parsed.streak += 1;
+                    } else if (parsed.dailyData.date !== yesterdayISO) {
+                        parsed.streak = 1;
+                    }
+
+                    parsed.dailyData = {
+                        date: todayISO(),
+                        steps: 0,
+                        compassionMode: false,
+                        habits: parsed.dailyData.habits.map(h => ({ ...h, done: false }))
+                    };
+                    localStorage.setItem(getUserStorageKey(username), JSON.stringify(parsed));
+                }
+                return parsed;
+            } catch (e) {
+                return createDefaultState();
+            }
+        }
+
+        function saveState() {
+            if (!currentUser || !appState) return;
+            try {
+                localStorage.setItem(getUserStorageKey(currentUser.username), JSON.stringify(appState));
+                updateHeaderStats();
+            } catch (e) {
+                showToast("Error al guardar los datos en tu cuenta", "error");
+            }
+        }
+
+        // ==========================================
+        // NOTIFICACIONES TOAST Y MODALES
+        // ==========================================
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const bgClass = type === 'error' ? 'bg-red-600 text-white' : (type === 'sky' ? 'bg-skybrand-600 text-white' : 'bg-ink text-white');
+            
+            toast.className = `${bgClass} px-4 py-3 rounded-2xl shadow-lg text-xs font-semibold flex items-center justify-between gap-2 transform transition-all duration-300 translate-y-0 opacity-100 pointer-events-auto`;
+            toast.innerHTML = `<span>${message}</span>`;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(-10px)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3200);
+        }
+
+        function confirmResetApp() {
+            const modal = document.getElementById('confirm-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.getElementById('modal-confirm-btn').onclick = () => {
+                appState = createDefaultState(appState.startWeight || 79.0);
+                saveState();
+                renderAll();
+                renderMilestones();
+                renderWeightChart();
+                renderLogsHistory();
+                closeConfirmModal();
+                showToast("Progreso de tu cuenta reiniciado.");
+            };
+        }
+
+        function closeConfirmModal() {
+            const modal = document.getElementById('confirm-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function openImportModal() {
+            const modal = document.getElementById('import-modal');
+            document.getElementById('import-data-textarea').value = '';
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeImportModal() {
+            const modal = document.getElementById('import-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function importDataFromText() {
+            const rawText = document.getElementById('import-data-textarea').value.trim();
+            if (!rawText) {
+                showToast("Pega primero el texto del respaldo", "error");
+                return;
+            }
+            try {
+                const parsed = JSON.parse(rawText);
+                if (!parsed.dailyData || !Array.isArray(parsed.weightLogs)) {
+                    throw new Error("Formato inválido");
+                }
+                appState = parsed;
+                saveState();
+                renderAll();
+                renderMilestones();
+                renderWeightChart();
+                renderLogsHistory();
+                closeImportModal();
+                showToast("✅ ¡Progreso restaurado en tu cuenta!", "sky");
+            } catch (e) {
+                showToast("El texto pegado no es un respaldo válido", "error");
+            }
+        }
+
+        // ==========================================
+        // NAVEGACIÓN ENTRE PESTAÑAS
+        // ==========================================
+        function switchTab(tabName) {
+            ['hoy', 'progreso', 'rutinas'].forEach(t => {
+                document.getElementById(`view-${t}`).classList.add('hidden');
+                const btn = document.getElementById(`tab-${t}`);
+                btn.classList.remove('tab-active');
+                btn.classList.add('bg-gray-100', 'text-gray-600');
+            });
+
+            document.getElementById(`view-${tabName}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`tab-${tabName}`);
+            activeBtn.classList.add('tab-active');
+            activeBtn.classList.remove('bg-gray-100', 'text-gray-600');
+
+            if (tabName === 'progreso') {
+                renderWeightChart();
+                renderMilestones();
+                renderLogsHistory();
+            }
+        }
+
+        // ==========================================
+        // GAMIFICACIÓN Y HEADER
+        // ==========================================
+        function updateHeaderStats() {
+            const level = Math.floor(appState.xp / 150) + 1;
+            const currentLevelXp = appState.xp % 150;
+            const pct = Math.min(100, Math.round((currentLevelXp / 150) * 100));
+
+            const titles = ["Estrella Naciente", "Constancia Pura", "Brillo Estelar", "Energía Azul", "Maestra del Equilibrio"];
+            const title = titles[Math.min(level - 1, titles.length - 1)];
+
+            document.getElementById('user-level-badge').textContent = `Nvl ${level} • ${title}`;
+            document.getElementById('user-streak').textContent = `🔥 ${appState.streak} ${appState.streak === 1 ? 'día' : 'días'}`;
+            document.getElementById('xp-bar').style.width = `${pct}%`;
+        }
+
+        // ==========================================
+        // MODO HOY: PASOS, CHECKLIST Y COMPASIÓN
+        // ==========================================
+        function renderSteps() {
+            const steps = appState.dailyData.steps;
+            const goal = 9000;
+            const pct = Math.min(100, Math.round((steps / goal) * 100));
+
+            document.getElementById('steps-display').textContent = steps.toLocaleString('es-ES');
+            document.getElementById('steps-bar').style.width = `${pct}%`;
+
+            const stepHabit = appState.dailyData.habits.find(h => h.id === 'h2');
+            if (steps >= 8000 && stepHabit && !stepHabit.done) {
+                toggleHabit('h2', true);
+            }
+        }
+
+        function addSteps(amount) {
+            appState.dailyData.steps += amount;
+            saveState();
+            renderSteps();
+            showToast(`+${amount.toLocaleString('es-ES')} pasos sumados 👟`, 'sky');
+        }
+
+        function setGoalSteps() {
+            appState.dailyData.steps = 9000;
+            saveState();
+            renderSteps();
+            showToast("¡Meta de 9.000 pasos conseguida! ⚡", 'sky');
+        }
+
+        function setCustomSteps() {
+            const input = document.getElementById('custom-steps-input');
+            const val = parseInt(input.value, 10);
+            if (!isNaN(val) && val >= 0) {
+                appState.dailyData.steps = val;
+                input.value = '';
+                saveState();
+                renderSteps();
+                showToast("Pasos guardados en tu cuenta");
+            }
+        }
+
+        function setWorkoutChoice(choice) {
+            appState.workoutChoice = choice;
+            const btnCaco = document.getElementById('btn-choice-caco');
+            const btnFuerza = document.getElementById('btn-choice-fuerza');
+
+            if (choice === 'caco') {
+                btnCaco.className = "px-3 py-2 rounded-xl text-xs font-bold bg-skybrand-500 text-white shadow-sm transition";
+                btnFuerza.className = "px-3 py-2 rounded-xl text-xs font-bold bg-white text-gray-700 border border-gray-200 transition";
+            } else {
+                btnFuerza.className = "px-3 py-2 rounded-xl text-xs font-bold bg-skybrand-500 text-white shadow-sm transition";
+                btnCaco.className = "px-3 py-2 rounded-xl text-xs font-bold bg-white text-gray-700 border border-gray-200 transition";
+            }
+            saveState();
+        }
+
+        function renderChecklist() {
+            const container = document.getElementById('daily-checklist');
+            container.innerHTML = '';
+
+            let doneCount = 0;
+            appState.dailyData.habits.forEach(habit => {
+                if (habit.done) doneCount++;
+                const div = document.createElement('div');
+                div.className = `p-3.5 rounded-2xl border transition flex items-center justify-between gap-3 cursor-pointer ${
+                    habit.done 
+                    ? 'bg-skybrand-50 border-skybrand-200 text-gray-500' 
+                    : 'bg-white border-gray-100 hover:border-gray-300 text-ink'
+                }`;
+                div.onclick = () => toggleHabit(habit.id);
+
+                div.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="w-6 h-6 rounded-lg flex items-center justify-center border-2 transition shrink-0 ${
+                            habit.done ? 'bg-skybrand-500 border-skybrand-500 text-white animate-pop' : 'border-gray-300 bg-white'
+                        }">
+                            ${habit.done ? '✓' : ''}
+                        </div>
+                        <span class="text-xs sm:text-sm font-medium ${habit.done ? 'line-through text-gray-400' : ''}">${habit.text}</span>
+                    </div>
+                    <span class="text-[11px] font-bold px-2 py-0.5 rounded-lg ${habit.done ? 'bg-skybrand-100 text-skybrand-700' : 'bg-gray-100 text-gray-500'} shrink-0">
+                        +${habit.xp} XP
+                    </span>
+                `;
+                container.appendChild(div);
+            });
+
+            document.getElementById('missions-counter').textContent = `${doneCount} / ${appState.dailyData.habits.length} completadas`;
+        }
+
+        function toggleHabit(id, forceTrue = false) {
+            const habit = appState.dailyData.habits.find(h => h.id === id);
+            if (!habit) return;
+
+            const wasDone = habit.done;
+            habit.done = forceTrue ? true : !habit.done;
+
+            if (!wasDone && habit.done) {
+                appState.xp += habit.xp;
+                showToast(`¡Genial! +${habit.xp} XP ganados ⚡`);
+            } else if (wasDone && !habit.done) {
+                appState.xp = Math.max(0, appState.xp - habit.xp);
+            }
+
+            saveState();
+            renderChecklist();
+        }
+
+        function addCustomHabit() {
+            const input = document.getElementById('new-habit-input');
+            const text = input.value.trim();
+            if (!text) return;
+
+            appState.dailyData.habits.push({
+                id: 'custom_' + Date.now(),
+                text: text,
+                done: false,
+                xp: 20
+            });
+            input.value = '';
+            saveState();
+            renderChecklist();
+            showToast("Misión personalizada guardada");
+        }
+
+        function activateCompassionMode() {
+            appState.dailyData.compassionMode = true;
+            saveState();
+            document.getElementById('coach-message').innerHTML = 
+                `⭐ <strong>Modo Escucha Corporal activado, ${currentUser.name}:</strong> Escuchar cuando tu cuerpo pide pausa también es entrenar. Tu racha está a salvo. Un abrazo, Lily.`;
+            showToast("Modo Escucha Corporal activado 💙", 'sky');
+        }
+
+        // ==========================================
+        // TEMPORIZADOR INTEGRADO
+        // ==========================================
+        function updateTimerDisplay() {
+            const mins = Math.floor(timerSeconds / 60).toString().padStart(2, '0');
+            const secs = (timerSeconds % 60).toString().padStart(2, '0');
+            document.getElementById('timer-display').textContent = `${mins}:${secs}`;
+        }
+
+        function selectTimerPreset() {
+            pauseTimer();
+            timerSeconds = parseInt(document.getElementById('timer-preset').value, 10);
+            updateTimerDisplay();
+            document.getElementById('timer-status').textContent = "Listo para empezar";
+        }
+
+        function toggleTimer() {
+            if (isTimerRunning) {
+                pauseTimer();
+            } else {
+                isTimerRunning = true;
+                document.getElementById('timer-start-btn').innerHTML = "<span>⏸</span> Pausar";
+                document.getElementById('timer-status').textContent = "¡Tú puedes! Mantén un ritmo cómodo";
+                
+                timerInterval = setInterval(() => {
+                    if (timerSeconds > 0) {
+                        timerSeconds--;
+                        updateTimerDisplay();
+                    } else {
+                        pauseTimer();
+                        document.getElementById('timer-status').textContent = "🎉 ¡Bloque completado! Brutal trabajo";
+                        showToast("⏱️ ¡Tiempo cumplido! ¡Eres una estrella!", 'sky');
+                    }
+                }, 1000);
+            }
+        }
+
+        function pauseTimer() {
+            isTimerRunning = false;
+            clearInterval(timerInterval);
+            document.getElementById('timer-start-btn').innerHTML = "<span>▶</span> Continuar";
+        }
+
+        function resetTimer() {
+            pauseTimer();
+            timerSeconds = parseInt(document.getElementById('timer-preset').value, 10);
+            updateTimerDisplay();
+            document.getElementById('timer-start-btn').innerHTML = "<span>▶</span> Iniciar";
+            document.getElementById('timer-status').textContent = "Listo para empezar sin agobios";
+        }
+
+        function startQuickRoutineTimer(seconds, label) {
+            switchTab('hoy');
+            pauseTimer();
+            timerSeconds = seconds;
+            updateTimerDisplay();
+            document.getElementById('timer-status').textContent = `Cargado: ${label}`;
+            showToast(`⏱️ ${label} lista en el temporizador`);
+        }
+
+        // ==========================================
+        // PROGRESO, MINI-METAS Y GRÁFICA
+        // ==========================================
+        function selectEnergy(val) {
+            selectedEnergy = val;
+            document.querySelectorAll('.energy-btn').forEach(btn => {
+                if (parseInt(btn.dataset.val, 10) === val) {
+                    btn.className = "energy-btn py-2 rounded-xl border-2 border-skybrand-500 bg-skybrand-50 text-xs font-bold";
+                } else {
+                    btn.className = "energy-btn py-2 rounded-xl border border-gray-200 text-xs font-bold hover:bg-gray-50";
+                }
+            });
+        }
+
+        function saveWeightLog() {
+            const weightVal = parseFloat(document.getElementById('input-weight').value);
+            const cycleVal = document.getElementById('input-cycle').value;
+            const notesVal = document.getElementById('input-notes').value.trim();
+
+            if (isNaN(weightVal) || weightVal < 35 || weightVal > 200) {
+                showToast("Por favor, introduce un peso válido en kg", "error");
+                return;
+            }
+
+            appState.weightLogs.push({
+                date: todayISO(),
+                weight: weightVal,
+                cycle: cycleVal,
+                energy: selectedEnergy,
+                notes: notesVal
+            });
+
+            appState.xp += 50;
+            document.getElementById('input-weight').value = '';
+            document.getElementById('input-notes').value = '';
+
+            saveState();
+            renderMilestones();
+            renderWeightChart();
+            renderLogsHistory();
+            showToast("Registro guardado en tu cuenta (+50 XP) ⚡", 'sky');
+        }
+
+        function renderMilestones() {
+            const startWeight = appState.startWeight || appState.weightLogs[0].weight || 79.0;
+            const targetWeight = 56.0;
+            const latestWeight = appState.weightLogs[appState.weightLogs.length - 1].weight;
+
+            document.getElementById('start-weight-label').textContent = `Inicio: ${startWeight.toFixed(1)} kg`;
+            document.getElementById('current-weight-hero').textContent = `${latestWeight.toFixed(1)} kg`;
+
+            const totalToLose = Math.max(1, startWeight - targetWeight);
+            const lostSoFar = Math.max(0, startWeight - latestWeight);
+            const pct = Math.min(100, Math.max(2, Math.round((lostSoFar / totalToLose) * 100)));
+
+            document.getElementById('progress-percent-label').textContent = `${pct}% del camino`;
+            document.getElementById('overall-weight-bar').style.width = `${pct}%`;
+
+            const milestones = [
+                { label: 'Escalón 1', kg: 75, desc: 'Primer impulso' },
+                { label: 'Escalón 2', kg: 70, desc: 'Gran avance' },
+                { label: 'Escalón 3', kg: 65, desc: 'Mitad del viaje' },
+                { label: 'Escalón 4', kg: 60, desc: 'Recta final' },
+                { label: 'Meta Final', kg: 56, desc: '¡Objetivo Logrado!' }
+            ];
+
+            const grid = document.getElementById('milestones-grid');
+            grid.innerHTML = '';
+
+            milestones.forEach(m => {
+                const achieved = latestWeight <= m.kg;
+                const card = document.createElement('div');
+                card.className = `p-3 rounded-2xl border text-center transition ${
+                    achieved 
+                    ? 'bg-skybrand-50 border-skybrand-400 text-ink shadow-sm' 
+                    : 'bg-gray-50 border-gray-100 text-gray-500'
+                }`;
+                card.innerHTML = `
+                    <span class="text-[10px] font-bold uppercase block ${achieved ? 'text-skybrand-600' : 'text-gray-400'}">${m.label}</span>
+                    <span class="font-display font-black text-lg block my-0.5 ${achieved ? 'text-ink' : 'text-gray-600'}">${m.kg} kg</span>
+                    <span class="text-[11px] block">${achieved ? '⭐ ¡Logrado!' : m.desc}</span>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function renderLogsHistory() {
+            const container = document.getElementById('logs-history');
+            container.innerHTML = '';
+
+            const reversed = [...appState.weightLogs].reverse();
+            reversed.forEach(log => {
+                const item = document.createElement('div');
+                item.className = "p-3 rounded-2xl bg-gray-50 border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2";
+                item.innerHTML = `
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="font-display font-bold text-sm text-ink">${log.weight.toFixed(1)} kg</span>
+                            <span class="text-xs text-gray-400">• ${log.date}</span>
+                            <span class="text-xs px-2 py-0.5 rounded-full bg-white border border-gray-200 font-medium">Energía: ${log.energy}/5</span>
+                        </div>
+                        <p class="text-xs text-skybrand-600 font-medium mt-0.5">${log.cycle}</p>
+                        ${log.notes ? `<p class="text-xs text-gray-500 italic mt-0.5">"${log.notes}"</p>` : ''}
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function renderWeightChart() {
+            const ctx = document.getElementById('weightChart').getContext('2d');
+            if (weightChartInstance) {
+                weightChartInstance.destroy();
+            }
+
+            const labels = appState.weightLogs.map(l => l.date.slice(5));
+            const data = appState.weightLogs.map(l => l.weight);
+
+            weightChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Peso (kg)',
+                        data: data,
+                        borderColor: '#3b9ab8',
+                        backgroundColor: 'rgba(107, 195, 219, 0.18)',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#6BC3DB',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: 5,
+                        tension: 0.35,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            suggestedMin: 54,
+                            suggestedMax: 81,
+                            grid: { color: '#f3f4f6' },
+                            ticks: { font: { family: 'Inter', size: 11 } }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { family: 'Inter', size: 11 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        function exportDataToClipboard() {
+            const dataStr = JSON.stringify(appState);
+            const tempInput = document.createElement('textarea');
+            tempInput.value = dataStr;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            showToast("📋 Respaldo copiado al portapapeles.");
+        }
+
+        // ==========================================
+        // INICIALIZACIÓN
+        // ==========================================
+        function renderAll() {
+            const options = { weekday: 'long', day: 'numeric', month: 'short' };
+            document.getElementById('today-date-label').textContent = new Date().toLocaleDateString('es-ES', options);
+            
+            updateHeaderStats();
+            renderSteps();
+            setWorkoutChoice(appState.workoutChoice);
+            renderChecklist();
+            updateTimerDisplay();
+        }
+
+        window.onload = function() {
+            const savedUsername = localStorage.getItem(ACTIVE_USER_KEY);
+            if (savedUsername) {
+                initSession(savedUsername);
+            }
+        };
+    </script>
+</body>
+</html>
